@@ -15,5 +15,5 @@ def menu():
         registro.registro()
     bt1 = tk.Button(w1,text="Registro",command=btclick)
     bt1.pack()
-    
+    #hola
     w1.mainloop()
