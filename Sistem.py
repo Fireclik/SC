@@ -11,6 +11,13 @@ def Log1():
     Vl.geometry("800x600+350+50")
     Vl.resizable(width=False,height=False)
 
+    #importar icono
+    icdir = os.path.dirname(__file__)
+    icodir = os.path.join(icdir,'imag')
+    icopath = os.path.join(icodir,'Log.ico')
+
+    Vl.iconbitmap(icopath)
+
     #importar imagen de fondo
     cdir = os.path.dirname(__file__) #obtener la direccion actual de sistem.py
     imgdir = os.path.join(cdir,'imag') #obtener la direccion de la carpeta o ruta completa
