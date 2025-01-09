@@ -79,7 +79,7 @@ def Re1():
             return False
 
     def validar_telef(telfm):
-        patron = r'^04(2|4|6|8|12)\d{10}$'
+        patron = r'^04(2|4|6|8|12)\d{7}$'
         if re.match(patron,telfm):
             return True
         else:
@@ -87,7 +87,7 @@ def Re1():
 
     def ecb_ob():
         if vcb1.get():
-            fp.pack(pady=10)
+            fp.pack(pady=5)
         else:
             fp.pack_forget()
             e17.delete(0,tk.END)
@@ -105,7 +105,26 @@ def Re1():
         else:
             fp3.pack_forget()
             e25.delete(0,tk.END)
+
+    def ecb_ob4():
+        if vcb11.get():
+            fp4.pack(pady=10)
+        else:
+            fp4.pack_forget()
+            e32.delete(0,tk.END)
     
+    def combobox_nacionalidad(event):
+        if e17_2.get() == "Venezolana":
+            fp_2.pack_forget()
+            e17_3.delete(0,tk.END)
+        elif e17_2.get() == "Extranjera":
+            fp_2.pack(pady=5)
+            cb1.pack_forget()
+            if vcb1.get():
+                fp.pack_forget()
+            cb1.pack(pady=4)
+            ecb_ob()
+
     def validacion_est():
         nom = e1.get()
         edad = e2.get()
@@ -129,6 +148,7 @@ def Re1():
         direc = e14.get()
         telfm = e15.get()
         enferm = e18.get()
+        pasap = e17_3.get()
 
         if not nom and not edad and not cies and not fdi and not fme and not fan and not pes and tcam == "[Seleccione]" and not tzap and not emil and not ape and sex == "[Seleccione una opcion]" and not ci and not lgna and not est and not tpan and not direc and not telfm:
             messagebox.showwarning("Advertencia","Campos vacios llenar los campos")
@@ -181,7 +201,7 @@ def Re1():
         elif sex == "[Seleccione una opcion]":
             messagebox.showwarning("Sexo","Tiene que definir el sexo del estudiante")
             return False
-        elif not cies and not ci:
+        elif e17_2.get() == "Venezolana" and not cies and not ci:
             messagebox.showwarning("Ci y ci Escolar","Tiene que colocar la cedula escolar o la cedula")
             return False
         elif ci and not ci.isdigit():
@@ -220,31 +240,47 @@ def Re1():
         elif cob2 == "[Seleccione una opcion]":
             messagebox.showwarning("Año a Cursar","Seleccione el año a cursar del estudiante")
             return False
-        
+        elif e17_2.get() == "Extranjera" and not pasap:
+            messagebox.showwarning("Pasaporte","El Estudiante extranjero tiene que colocar su pasaporte")
+            return False
+        elif pasap and ci and cies or pasap and ci or pasap and cies or e17_2.get() == "Extranjera" and ci or e17_2.get() == "Extranjera" and cies or e17_2.get() == "Extranjera" and ci and cies:
+            messagebox.showerror("Error","El estudiante extranjero tiene que tener unicamente su pasaporte la cedula o cedula escolar no se ingresan")
+            return False
+        elif cob2 == "[Seleccione una Opcion]":
+            messagebox.showwarning("Año a Cursar","Seleccione el año que va a cursar el estudiante")
+            return False
+
         pes = float(pes)
         tzap = int(tzap)
 
-        if ci and not cies:
-            ci = int(ci)
-            print(ci)
-        else:
-            cies = int(cies)
-            print(cies)
-
-        print(tzap)
-        print(emil)
-        print(telfm)
         return True
     
     def validacion_telefhabitacion(telfh):
         try:
-            telefh = int(telefh)
-            if telefh <= 0:
+            telfh = int(telfh)
+            if telfh <= 0:
                 raise ValueError
             return True
         except ValueError:
             return False
     
+    def notienemadre():
+        if vcb4.get():
+            frame.pack_forget()
+            e19.delete(0,tk.END)
+            e20.delete(0,tk.END)
+            e21.delete(0,tk.END)
+            e22.delete(0,tk.END)
+            e23.delete(0,tk.END)
+            e24.delete(0,tk.END)
+            e25.delete(0,tk.END)
+            vcb5.set(False)
+            vcb6.set(False)
+            vcb7.set(False)
+            ecb_ob3
+        else:
+            frame.pack(fill=tk.BOTH,expand=1)
+
     def tienemadre(madre):
         if vcb4.get():
             return madre
@@ -285,25 +321,200 @@ def Re1():
         elif telfh and not validacion_telefhabitacion(telfh):
             messagebox.showerror("Error","Telefono de Habitacion Invalido")
             return False
-        elif telft and not validacion_telefhabitacion(telfh):
+        elif telft and not validacion_telefhabitacion(telft):
             messagebox.showerror("Error","Telefono de Trabajo Invalido")
             return False
+        elif emil and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',emil):
+            messagebox.showerror("Error","Email Invalido")
+            return False
+
+        return True
+
+    def notienepadre():
+        if vcb8.get():
+            frame2.pack_forget()
+            e26.delete(0,tk.END)
+            e27.delete(0,tk.END)
+            e28.delete(0,tk.END)
+            e29.delete(0,tk.END)
+            e30.delete(0,tk.END)
+            e31.delete(0,tk.END)
+            e32.delete(0,tk.END)
+            vcb9.set(False)
+            vcb10.set(False)
+            vcb11.set(False)
+            ecb_ob4()
+        else:
+            frame2.pack(fill=tk.BOTH,expand=1)
        
+    def tienepadre(padre):
+        if vcb8.get():
+            return padre
+        else:
+            padre = 1
+            return padre
+        
+    def validacion_padre():
+        nombreap = e26.get()
+        ci = e27.get()
+        dir = e28.get()
+        telfm = e29.get()
+        telfh = e30.get()
+        emil = e31.get()
+        telft = e32.get()
+
+        if not nombreap and not ci and not dir:
+            messagebox.showwarning("Padre","Campos de datos del Padre Vacios")
+            return False
+        elif not nombreap.strip():
+            messagebox.showwarning("Nombre Madre","El nombre del Padre no puede estar vacio")
+            return False
+        elif not nombreap.replace(" ","").isalpha():
+            messagebox.showerror("Error","El nombre del Padre solo puede contener Letras")
+            return False
+        elif not ci:
+            messagebox.showwarning("Cedula Padre","La Cedula del Padre es necesaria")
+            return False
+        elif not ci.isdigit():
+            messagebox.showerror("Error","La Cedula tiene que tener solo digitos")
+            return False
+        elif not dir:
+            messagebox.showwarning("Direccion","La direccion no puede estar vacia")
+            return False
+        elif telfm and not validar_telef(telfm):
+            messagebox.showerror("Error","Telefono Movil Invalido")
+            return False
+        elif telfh and not validacion_telefhabitacion(telfh):
+            messagebox.showerror("Error","Telefono de Habitacion Invalido")
+            return False
+        elif telft and not validacion_telefhabitacion(telft):
+            messagebox.showerror("Error","Telefono de Trabajo Invalido")
+            return False
+        elif emil and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',emil):
+            messagebox.showerror("Error","Email Invalido")
+            return False
+
+        return True
+    
+    def representantetrabaja():
+        if vcb14.get():
+            fp5.pack(pady=10)
+        else:
+            fp5.pack_forget()
+            e39.delete(0,tk.END)
+
+    def esrepresentante1():
+        if vcb7.get():
+            vcb12.set(False)
+            vcb10.set(False)
+            esrepresentante3() 
+
+    def esrepresentante2():
+        if vcb10.get():
+            vcb12.set(False)
+            vcb7.set(False)
+            esrepresentante3()         
+
+    def esrepresentante3():
+        if not vcb12.get():
+            frame3.pack_forget()
+            e33.delete(0,tk.END)
+            e34.delete(0,tk.END)
+            e35.delete(0,tk.END)
+            e36.delete(0,tk.END)
+            e37.delete(0,tk.END)
+            e38.delete(0,tk.END)
+            e39.delete(0,tk.END)
+            e40.delete(0,tk.END)
+            vcb13.set(False)
+            vcb14.set(False)
+        else:
+            frame3.pack(fill=tk.BOTH,expand=1)
+            vcb7.set(False)
+            vcb10.set(False)
+
+       
+    def tienerepresentante(representante):
+        if not vcb12.get():
+            return representante
+        else:
+            representante = 1
+            return representante
+        
+    def validacion_Representante():
+        nombreap = e33.get()
+        ci = e34.get()
+        dir = e35.get()
+        telfm = e36.get()
+        telfh = e37.get()
+        emil = e38.get()
+        telft = e39.get()
+        tiprepresent = e40.get()
+
+        if not nombreap and not ci and not dir:
+            messagebox.showwarning("Representante","Campos de datos del Representante Vacios")
+            return False
+        elif not nombreap.strip():
+            messagebox.showwarning("Nombre Representante","El nombre del Representante no puede estar vacio")
+            return False
+        elif not nombreap.replace(" ","").isalpha():
+            messagebox.showerror("Error","El nombre del Representante solo puede contener Letras")
+            return False
+        elif not ci:
+            messagebox.showwarning("Cedula Padre","La Cedula del Representante es necesaria")
+            return False
+        elif not ci.isdigit():
+            messagebox.showerror("Error","La Cedula tiene que tener solo digitos")
+            return False
+        elif not dir:
+            messagebox.showwarning("Direccion","La direccion no puede estar vacia")
+            return False
+        elif telfm and not validar_telef(telfm):
+            messagebox.showerror("Error","Telefono Movil Invalido")
+            return False
+        elif telfh and not validacion_telefhabitacion(telfh):
+            messagebox.showerror("Error","Telefono de Habitacion Invalido")
+            return False
+        elif telft and not validacion_telefhabitacion(telft):
+            messagebox.showerror("Error","Telefono de Trabajo Invalido")
+            return False
+        elif emil and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',emil):
+            messagebox.showerror("Error","Email Invalido")
+            return False
+        elif not tiprepresent.strip():
+            messagebox.showwarning("Tipo de representante","El tipo de representante tiene que ser especificado,(Tio,Tia,Abuela,Abuelo,etc.)")
+            return False
+        elif not tiprepresent.replace(" ","").isalpha():
+            messagebox.showerror("Error","El tipo de representante solo puede contener Letras")
+            return False
+
+        return True
         
     def btacc():
         madre = 0
         padre = 0
         representante = 0
         if not validacion_est():
-            print("False")
+            print("False Estudiante")
             return
         elif tienemadre(madre) == 1:
             if not validacion_madre():
-                print("False")
+                print("False Madre")
                 return
             else:
-                print("True")
-                
+                madre = 2
+        elif tienepadre(padre) == 1:
+            if not validacion_padre():
+                print("False padre")
+                return
+            else:
+                padre == 2
+        elif tienerepresentante(representante) == 1:
+            if not validacion_Representante():
+                print ("False Representante")
+                return
+            else:
+                representante == 2
         else:
             messagebox.showinfo("Datos ingresados","Datos ingresados Correctamente")
 
@@ -329,11 +540,21 @@ def Re1():
     e7 = tk.Entry(f1,width=5); e7.pack(pady=5)
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Email",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
     e8 = tk.Entry(f1,width=20); e8.pack(pady=5)
+    
+    tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Nacionalidad",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
+    e17_2 = ttk.Combobox(f1,values=("Venezolana","Extranjera"),state="readonly"); e17_2.set("Venezolana"); e17_2.bind("<<ComboboxSelected>>",combobox_nacionalidad);e17_2.pack(pady=4)
+    fp_2 = tk.Frame(f1); fp_2.pack(pady=5)
+    tk.Label(fp_2,text="Pasaporte",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
+    e17_3 = tk.Entry(fp_2,width=20); e17_3.pack(pady=5)
+    tk.Label(fp_2,text=" ",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
+    fp_2.pack_forget()
+
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
-    vcb1 = tk.BooleanVar(); cb1 = tk.Checkbutton(f1,text="Observaciones",variable=vcb1,command=ecb_ob).pack(pady=8)
+    vcb1 = tk.BooleanVar(); cb1 = tk.Checkbutton(f1,text="Observaciones",variable=vcb1,command=ecb_ob); cb1.pack(pady=4)
     fp = tk.Frame(f1); fp.pack(pady=5)
     e17 = tk.Entry(fp,width=20); e17.pack(pady=5)
     fp.pack_forget()
+
 
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
     #frame 2 entradas y labels
@@ -371,9 +592,15 @@ def Re1():
     vcb3 = tk.BooleanVar(); cb3 = tk.Checkbutton(pe2,text="¿Repite?",variable=vcb3).pack(pady=8)
 
     #pestaña 3
+
+    ttk.Label(pe3,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
+    vcb4 = tk.BooleanVar(); cb4 = tk.Checkbutton(pe3,text="No tiene",variable=vcb4,command=notienemadre).pack(pady=8)
+
     #Creacion del Canvas
-    cn3 = tk.Canvas(pe3); cn3.pack(side=tk.LEFT,fill=tk.BOTH,expand=1)
-    sc3 = tk.Scrollbar(pe3,orient=tk.VERTICAL,command=cn3.yview); sc3.pack(side=tk.RIGHT,fill=tk.Y)#creacion del scrollbar
+    frame = tk.Frame(pe3); frame.pack(fill=tk.BOTH,expand=1)
+
+    cn3 = tk.Canvas(frame); cn3.pack(side=tk.LEFT,fill=tk.BOTH,expand=1)
+    sc3 = tk.Scrollbar(frame,orient=tk.VERTICAL,command=cn3.yview); sc3.pack(side=tk.RIGHT,fill=tk.Y)#creacion del scrollbar
     cn3.config(yscrollcommand=sc3.set)#configurar al canvas junto al scrollbar
 
     #creacion de los frames
@@ -381,8 +608,8 @@ def Re1():
     #asignacion de los frames al canvas
     cn3.create_window((200,50),window=f5); cn3.create_window((400,50),window=f6)
     
-    ttk.Label(pe3,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
-    vcb4 = tk.BooleanVar(); cb4 = tk.Checkbutton(pe3,text="No tiene",variable=vcb4).pack(pady=8)
+    
+
     ttk.Label(f5,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f5,text="Nombre y Apellido de la Madre").pack(padx=4,pady=5)
     e19 = tk.Entry(f5,width=20); e19.pack(pady=5)
     ttk.Label(f6,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f6,text="Cedula de la Madre").pack(padx=4,pady=5)
@@ -395,8 +622,9 @@ def Re1():
     e23 = tk.Entry(f5,width=20); e23.pack(pady=5)
     ttk.Label(f6,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f6,text="Email").pack(padx=4,pady=5)
     e24 = tk.Entry(f6,width=20); e24.pack(pady=5)
-    ttk.Label(f5,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); 
+    ttk.Label(f5,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
     vcb5 = tk.BooleanVar(); cb5 = tk.Checkbutton(f5,text="¿Vive con el Estudiante?",variable=vcb5).pack(padx=4,pady=5)
+    vcb7 = tk.BooleanVar(); cb7 = tk.Checkbutton(f5,text="Es Representate",variable=vcb7,command=esrepresentante1).pack(padx=4,pady=5)
     vcb6 = tk.BooleanVar(); cb6 = tk.Checkbutton(f6,text="¿Trabaja?",variable=vcb6,command=ecb_ob3).pack(padx=4,pady=5)
 
     fp3 = tk.Frame(f6); fp3.pack(pady=5)
@@ -408,7 +636,102 @@ def Re1():
     f5.bind("<Configure>", lambda e: cn3.configure(scrollregion=cn3.bbox("all")))
     f6.bind("<Configure>", lambda e: cn3.configure(scrollregion=cn3.bbox("all")))
 
+    #pestaña 4
+
+    ttk.Label(pe4,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
+    vcb8 = tk.BooleanVar(); cb8 = tk.Checkbutton(pe4,text="No tiene",variable=vcb8,command=notienepadre).pack(pady=8)
+
+    #Creacion del Canvas
+    frame2 = tk.Frame(pe4); frame2.pack(fill=tk.BOTH,expand=1)
+
+    cn4 = tk.Canvas(frame2); cn4.pack(side=tk.LEFT,fill=tk.BOTH,expand=1)
+    sc4 = tk.Scrollbar(frame2,orient=tk.VERTICAL,command=cn4.yview); sc4.pack(side=tk.RIGHT,fill=tk.Y)#creacion del scrollbar
+    cn4.config(yscrollcommand=sc4.set)#configurar al canvas junto al scrollbar
+
+    #creacion de los frames
+    f7 = tk.Frame(cn4); f8 = tk.Frame(cn4)
+    #asignacion de los frames al canvas
+    cn4.create_window((200,50),window=f7); cn4.create_window((400,50),window=f8)
+    
+    
+
+    ttk.Label(f7,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f7,text="Nombre y Apellido del Padre").pack(padx=4,pady=5)
+    e26 = tk.Entry(f7,width=20); e26.pack(pady=5)
+    ttk.Label(f8,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f8,text="Cedula del Padre").pack(padx=4,pady=5)
+    e27 = tk.Entry(f8,width= 20); e27.pack(pady=5)
+    ttk.Label(f7,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f7,text="Direccion").pack(padx=4,pady=5)
+    e28 = tk.Entry(f7, width=20); e28.pack(pady=5)
+    ttk.Label(f8,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f8,text="Telefono Movil").pack(padx=4,pady=5)
+    e29 = tk.Entry(f8,width=20); e29.pack(pady=5)
+    ttk.Label(f7,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f7,text="Telefono de Habitacion").pack(padx=4,pady=5)
+    e30 = tk.Entry(f7,width=20); e30.pack(pady=5)
+    ttk.Label(f8,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f8,text="Email").pack(padx=4,pady=5)
+    e31 = tk.Entry(f8,width=20); e31.pack(pady=5)
+    ttk.Label(f7,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
+    vcb9 = tk.BooleanVar(); cb9 = tk.Checkbutton(f7,text="¿Vive con el Estudiante?",variable=vcb9).pack(padx=4,pady=5)
+    vcb10 = tk.BooleanVar(); cb10 = tk.Checkbutton(f7,text="Es Representate",variable=vcb10,command=esrepresentante2).pack(padx=4,pady=5)
+    vcb11 = tk.BooleanVar(); cb11 = tk.Checkbutton(f8,text="¿Trabaja?",variable=vcb11,command=ecb_ob4).pack(padx=4,pady=5)
+
+    fp4 = tk.Frame(f8); fp4.pack(pady=5)
+    ttk.Label(fp4,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(fp4,text="Telefono de Trabajo").pack(padx=4,pady=5)
+    e32 = tk.Entry(fp4,width=20); e32.pack(pady=5)
+    fp4.pack_forget()
+
+    
+    f7.bind("<Configure>", lambda e: cn4.configure(scrollregion=cn4.bbox("all")))
+    f8.bind("<Configure>", lambda e: cn4.configure(scrollregion=cn4.bbox("all")))
+
+    #pestaña 5
+
+    ttk.Label(pe5,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
+    vcb12 = tk.BooleanVar(); cb12 = tk.Checkbutton(pe5,text="Otro Representante",variable=vcb12,command=esrepresentante3).pack(pady=8)
+
+    #Creacion del Canvas
+    frame3 = tk.Frame(pe5); frame3.pack(fill=tk.BOTH,expand=1)
+
+    cn5 = tk.Canvas(frame3); cn5.pack(side=tk.LEFT,fill=tk.BOTH,expand=1)
+    sc5 = tk.Scrollbar(frame3,orient=tk.VERTICAL,command=cn5.yview); sc5.pack(side=tk.RIGHT,fill=tk.Y)#creacion del scrollbar
+    cn5.config(yscrollcommand=sc5.set)#configurar al canvas junto al scrollbar
+
+    #creacion de los frames
+    f9 = tk.Frame(cn5); f10 = tk.Frame(cn5)
+    #asignacion de los frames al canvas
+    cn5.create_window((200,50),window=f9); cn5.create_window((400,50),window=f10)
+    
+    
+
+    ttk.Label(f9,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f9,text="Nombre y Apellido").pack(padx=4,pady=5)
+    e33 = tk.Entry(f9,width=20); e33.pack(pady=5)
+    ttk.Label(f10,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f10,text="Cedula").pack(padx=4,pady=5)
+    e34 = tk.Entry(f10,width= 20); e34.pack(pady=5)
+    ttk.Label(f9,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f9,text="Direccion").pack(padx=4,pady=5)
+    e35 = tk.Entry(f9, width=20); e35.pack(pady=5)
+    ttk.Label(f10,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f10,text="Telefono Movil").pack(padx=4,pady=5)
+    e36 = tk.Entry(f10,width=20); e36.pack(pady=5)
+    ttk.Label(f9,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f9,text="Telefono de Habitacion").pack(padx=4,pady=5)
+    e37 = tk.Entry(f9,width=20); e37.pack(pady=5)
+    ttk.Label(f10,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f10,text="Email").pack(padx=4,pady=5)
+    e38 = tk.Entry(f10,width=20); e38.pack(pady=5)
+    ttk.Label(f9,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
+
+    ttk.Label(f10,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f10,text="Tipo de Representante").pack(padx=4,pady=5)
+    e40 = tk.Entry(f10,width=20); e40.pack(pady=5)
+    ttk.Label(f10,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
+    vcb13 = tk.BooleanVar(); cb13 = tk.Checkbutton(f9,text="¿Vive con el Estudiante?",variable=vcb13).pack(padx=4,pady=5)
+    vcb14 = tk.BooleanVar(); cb14 = tk.Checkbutton(f10,text="¿Trabaja?",variable=vcb14,command=representantetrabaja).pack(padx=4,pady=5)
+
+    fp5 = tk.Frame(f10); fp5.pack(pady=5)
+    ttk.Label(fp5,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(fp5,text="Telefono de Trabajo").pack(padx=4,pady=5)
+    e39 = tk.Entry(fp5,width=20); e39.pack(pady=5)
+    fp5.pack_forget()
+
+    frame3.pack_forget()
+
+
+    f9.bind("<Configure>", lambda e: cn5.configure(scrollregion=cn5.bbox("all")))
+    f10.bind("<Configure>", lambda e: cn5.configure(scrollregion=cn5.bbox("all")))
+    
     bt1 = tk.Button(Vr,text="Registrar",font=("Cascadia Mono",12),command=btacc); bt1.pack(); bt1.place(x=350,y=500)
     Vr.mainloop()
-
+    
 Re1()

@@ -22,6 +22,7 @@ def dbbin():
                     sexo TEXT,
                     lugar_nacimiento TEXT,
                     nacionalidad TEXT,
+                    Pasaporte TEXT,
                     ci_estudiante TEXT,
                     cedula_escolar TEXT,
                     estatura REAL,
