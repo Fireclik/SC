@@ -79,7 +79,7 @@ def Re1():
             return False
 
     def validar_telef(telfm):
-        patron = r'^04(2|4|6|8|12)\d{7}$'
+        patron = r'^04(2|4|6|8|12|24|26|16)\d{7}$'
         if re.match(patron,telfm):
             return True
         else:
@@ -140,6 +140,7 @@ def Re1():
         emil = e8.get()
         ape = e9.get()
         sex = cob1.get()
+        cursar = cob2.get()
         ci = e10.get()
         lgna = e11.get()
         est = e12.get()
@@ -150,7 +151,7 @@ def Re1():
         enferm = e18.get()
         pasap = e17_3.get()
 
-        if not nom and not edad and not cies and not fdi and not fme and not fan and not pes and tcam == "[Seleccione]" and not tzap and not emil and not ape and sex == "[Seleccione una opcion]" and not ci and not lgna and not est and not tpan and not direc and not telfm:
+        if not nom and not edad and not cies and not fdi and not fme and not fan and not pes and tcam == "[Seleccione]" and not tzap and not emil and not ape and sex == "[Seleccione una opcion]" and not ci and not lgna and not est and not tpan and not direc and not telfm and cursar == "[Seleccione una opcion]":
             messagebox.showwarning("Advertencia","Campos vacios llenar los campos")
             return False
         elif not nom.strip():
@@ -189,8 +190,8 @@ def Re1():
         elif not validar_tallazapatos(tzap):
             messagebox.showerror("Error","La Talla de zapatos esta fuera de rango")
             return False 
-        elif emil and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',emil):
-            messagebox.showerror("Error","Email Invalido")
+        elif emil and ' ' in emil:
+            messagebox.showerror("Error","Email No puede Tener Espacios")
             return False
         elif not ape.strip():
             messagebox.showwarning("Apellido","El Apellido no puede estar vacio")
@@ -237,7 +238,7 @@ def Re1():
         elif not e17.get() and vcb1.get():
             messagebox.showwarning("Observaciones","El Campo de Observaciones Seleccionado porfavor llenarlo")
             return False
-        elif cob2 == "[Seleccione una opcion]":
+        elif cursar == "[Seleccione una opcion]":
             messagebox.showwarning("Año a Cursar","Seleccione el año a cursar del estudiante")
             return False
         elif e17_2.get() == "Extranjera" and not pasap:
@@ -245,9 +246,6 @@ def Re1():
             return False
         elif pasap and ci and cies or pasap and ci or pasap and cies or e17_2.get() == "Extranjera" and ci or e17_2.get() == "Extranjera" and cies or e17_2.get() == "Extranjera" and ci and cies:
             messagebox.showerror("Error","El estudiante extranjero tiene que tener unicamente su pasaporte la cedula o cedula escolar no se ingresan")
-            return False
-        elif cob2 == "[Seleccione una Opcion]":
-            messagebox.showwarning("Año a Cursar","Seleccione el año que va a cursar el estudiante")
             return False
 
         pes = float(pes)
@@ -324,8 +322,11 @@ def Re1():
         elif telft and not validacion_telefhabitacion(telft):
             messagebox.showerror("Error","Telefono de Trabajo Invalido")
             return False
-        elif emil and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',emil):
-            messagebox.showerror("Error","Email Invalido")
+        elif emil and ' ' in emil:
+            messagebox.showerror("Error","Email No puede Tener espacios")
+            return False
+        elif not vcb7.get() and not vcb10.get() and not vcb12.get():
+            messagebox.showwarning("Representante","Indique que familiar es el representante")
             return False
 
         return True
@@ -390,8 +391,11 @@ def Re1():
         elif telft and not validacion_telefhabitacion(telft):
             messagebox.showerror("Error","Telefono de Trabajo Invalido")
             return False
-        elif emil and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',emil):
-            messagebox.showerror("Error","Email Invalido")
+        elif emil and ' ' in emil:
+            messagebox.showerror("Error","Email No puede Tener Espacios")
+            return False
+        elif not vcb7.get() and not vcb10.get() and not vcb12.get():
+            messagebox.showwarning("Representante","Indique que familiar es el representante")
             return False
 
         return True
@@ -478,8 +482,8 @@ def Re1():
         elif telft and not validacion_telefhabitacion(telft):
             messagebox.showerror("Error","Telefono de Trabajo Invalido")
             return False
-        elif emil and not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',emil):
-            messagebox.showerror("Error","Email Invalido")
+        elif emil and ' ' in emil:
+            messagebox.showerror("Error","Email No puede tener espacios")
             return False
         elif not tiprepresent.strip():
             messagebox.showwarning("Tipo de representante","El tipo de representante tiene que ser especificado,(Tio,Tia,Abuela,Abuelo,etc.)")
@@ -497,26 +501,35 @@ def Re1():
         if not validacion_est():
             print("False Estudiante")
             return
-        elif tienemadre(madre) == 1:
+        else:
+            print("True Estudiante")
+
+        if tienemadre(madre) == 1:
             if not validacion_madre():
                 print("False Madre")
                 return
             else:
                 madre = 2
-        elif tienepadre(padre) == 1:
+
+        if tienepadre(padre) == 1:
             if not validacion_padre():
                 print("False padre")
                 return
             else:
-                padre == 2
-        elif tienerepresentante(representante) == 1:
+                padre = 2
+
+        if tienerepresentante(representante) == 1:
             if not validacion_Representante():
                 print ("False Representante")
                 return
             else:
-                representante == 2
-        else:
-            messagebox.showinfo("Datos ingresados","Datos ingresados Correctamente")
+                representante = 2
+
+        if padre == 0 and madre == 0 and representante == 0:
+            messagebox.showerror("Error","El estudiante tiene que ser representado por alguien")
+            return 
+                
+        messagebox.showinfo("Datos ingresados","Datos ingresados Correctamente")
 
     #frame 1 entradas y labels
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Nombre",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
