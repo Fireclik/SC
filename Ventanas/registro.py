@@ -37,6 +37,15 @@ def Re1():
     #asignacion de los frames al canvas
     cn.create_window((200,50),window=f1); cn.create_window((400,50),window=f2)
 
+    def on_mousewheel3(event): 
+        cn3.yview_scroll(int(-1*(event.delta/120)), "units")
+    def on_mousewheel(event): 
+        cn.yview_scroll(int(-1*(event.delta/120)), "units")
+    def on_mousewheel4(event): 
+        cn4.yview_scroll(int(-1*(event.delta/120)), "units")
+    def on_mousewheel5(event): 
+        cn5.yview_scroll(int(-1*(event.delta/120)), "units")
+
     #Validacion de Entradas y funciones especiales en los checkboxes
     def validar_fecha(fecha):
         try:
@@ -598,6 +607,8 @@ def Re1():
     f1.bind("<Configure>", lambda e: cn.configure(scrollregion=cn.bbox("all")))
     f2.bind("<Configure>", lambda e: cn.configure(scrollregion=cn.bbox("all")))
 
+    cn.bind_all("<MouseWheel>", on_mousewheel)
+
     #Pestaña 2
     ttk.Label(pe2,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(pe2,text="Año a cursar",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
     cob2 = ttk.Combobox(pe2,values=("[Seleccione una opcion]","1er Año","2do Año","3er Año","4to Año","5to Año","6to Año"),state="readonly"); cob2.set("[Seleccione una opcion]");cob2.pack(pady=5)
@@ -649,6 +660,9 @@ def Re1():
     f5.bind("<Configure>", lambda e: cn3.configure(scrollregion=cn3.bbox("all")))
     f6.bind("<Configure>", lambda e: cn3.configure(scrollregion=cn3.bbox("all")))
 
+    #Capacidad de utilizar la rueda del raton en el scrollbar
+    cn3.bind_all("<MouseWheel>", on_mousewheel3)
+
     #pestaña 4
 
     ttk.Label(pe4,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
@@ -693,6 +707,8 @@ def Re1():
     
     f7.bind("<Configure>", lambda e: cn4.configure(scrollregion=cn4.bbox("all")))
     f8.bind("<Configure>", lambda e: cn4.configure(scrollregion=cn4.bbox("all")))
+
+    cn4.bind_all("<MouseWheel>", on_mousewheel4)
 
     #pestaña 5
 
@@ -743,6 +759,8 @@ def Re1():
 
     f9.bind("<Configure>", lambda e: cn5.configure(scrollregion=cn5.bbox("all")))
     f10.bind("<Configure>", lambda e: cn5.configure(scrollregion=cn5.bbox("all")))
+
+    cn5.bind_all("<MouseWheel>", on_mousewheel5)
     
     bt1 = tk.Button(Vr,text="Registrar",font=("Cascadia Mono",12),command=btacc); bt1.pack(); bt1.place(x=350,y=500)
     Vr.mainloop()
