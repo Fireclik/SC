@@ -63,7 +63,6 @@ def dbbin():
     cur.execute('''CREATE TABLE IF NOT EXISTS materias (
                     id INTEGER PRIMARY KEY,
                     nombre TEXT,
-                    codigo TEXT,
                     abreviatura TEXT,
                     anio TEXT,
                     ci_docente TEXT,

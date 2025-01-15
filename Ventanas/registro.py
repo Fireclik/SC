@@ -26,6 +26,10 @@ def Re1():
     nb.add(pe1,text="Datos del Estudiante"); nb.add(pe2,text="Datos Academicos"); nb.add(pe3,text="Datos de la Madre"); nb.add(pe4,text="Datos del Padre"); nb.add(pe5,text="Datos del Representante")#añadir a las pestañas en el notebook
     nb.pack(); nb.config(height=300,width=600); nb.place(x=100,y=150)
 
+    style = ttk.Style() 
+    style.configure("TNotebook.Tab", padding=[10, 5]) 
+    style.map("TNotebook.Tab", foreground=[("selected", "green"), ("!selected", "black")])
+
     #Pesataña 1
     #Creacion del Canvas
     cn = tk.Canvas(pe1); cn.pack(side=tk.LEFT,fill=tk.BOTH,expand=1)
@@ -35,7 +39,7 @@ def Re1():
     #creacion de los frames
     f1 = tk.Frame(cn); f2 = tk.Frame(cn)
     #asignacion de los frames al canvas
-    cn.create_window((200,50),window=f1); cn.create_window((400,50),window=f2)
+    cn.create_window((200,80),window=f1); cn.create_window((400,0),window=f2)
 
     def on_mousewheel(event): 
         widget = Vr.winfo_containing(event.x_root, event.y_root) 
@@ -94,7 +98,7 @@ def Re1():
 
     def ecb_ob():
         if vcb1.get():
-            fp.pack(pady=5)
+            fp.pack(pady=2)
         else:
             fp.pack_forget()
             e17.delete(0,tk.END)
@@ -546,13 +550,14 @@ def Re1():
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Cedula Escolar",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
     e3 = tk.Entry(f1,width=20); e3.pack(pady=5)
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Fecha de Nacimiento",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
+    tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="(dd/mm/aa)",font=("Cascadia Mono",12)).pack(padx=4,pady=5)
 
     fd = ttk.Frame(f1); fd.pack(pady=5) 
     e4_1 = tk.Entry(fd, width=5); e4_1.pack(side=tk.LEFT, padx=2)
     e4_2 = tk.Entry(fd, width=5); e4_2.pack(side=tk.LEFT, padx=2)
     e4_3 = tk.Entry(fd, width=7); e4_3.pack(side=tk.LEFT, padx=2)
 
-    tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Peso",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
+    tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Peso (Kg)",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
     e5 = tk.Entry(f1,width=5); e5.pack(pady=5)
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Talla de Camisa",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
     e6 = ttk.Combobox(f1,values=("[Seleccione]","14","16","S","M","L","XL"),state="readonly"); e6.set("[Seleccione]") ;e6.pack(pady=4)
@@ -571,8 +576,8 @@ def Re1():
 
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5)
     vcb1 = tk.BooleanVar(); cb1 = tk.Checkbutton(f1,text="Observaciones",variable=vcb1,command=ecb_ob); cb1.pack(pady=4)
-    fp = tk.Frame(f1); fp.pack(pady=5)
-    e17 = tk.Entry(fp,width=20); e17.pack(pady=5)
+    fp = tk.Frame(f1); fp.pack(pady=2)
+    e17 = tk.Entry(fp,width=20); e17.pack()
     fp.pack_forget()
 
 
@@ -587,7 +592,7 @@ def Re1():
     e10 = tk.Entry(f2,width=20);e10.pack(pady=5)
     tk.Label(f2,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f2,text="Lugar de Nacimiento",font=("Cascadia Mono",12)).pack(padx=4,pady=4) 
     e11 = tk.Entry(f2,width=20);e11.pack(pady=5)
-    tk.Label(f2,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f2,text="Estatura",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
+    tk.Label(f2,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f2,text="Estatura (metros)",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
     e12 = tk.Entry(f2,width=20);e12.pack(pady=5)
     tk.Label(f2,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f2,text="Talla de Pantalon",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
     e13 = tk.Entry(f2,width=20);e13.pack(pady=5)
@@ -602,9 +607,11 @@ def Re1():
     e18 = tk.Entry(fp2,width=20); e18.pack(pady=5)
     fp2.pack_forget()
 
+
     f1.bind("<Configure>", lambda e: cn.configure(scrollregion=cn.bbox("all")))
     f2.bind("<Configure>", lambda e: cn.configure(scrollregion=cn.bbox("all")))
 
+    
 
     #Pestaña 2
     ttk.Label(pe2,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(pe2,text="Año a cursar",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
@@ -627,7 +634,7 @@ def Re1():
     #creacion de los frames
     f5 = tk.Frame(cn3); f6 = tk.Frame(cn3)
     #asignacion de los frames al canvas
-    cn3.create_window((200,50),window=f5); cn3.create_window((400,50),window=f6)
+    cn3.create_window((200,80),window=f5); cn3.create_window((400,50),window=f6)
     
     
 
@@ -674,7 +681,7 @@ def Re1():
     #creacion de los frames
     f7 = tk.Frame(cn4); f8 = tk.Frame(cn4)
     #asignacion de los frames al canvas
-    cn4.create_window((200,50),window=f7); cn4.create_window((400,50),window=f8)
+    cn4.create_window((200,80),window=f7); cn4.create_window((400,50),window=f8)
     
     
 
@@ -719,7 +726,7 @@ def Re1():
     #creacion de los frames
     f9 = tk.Frame(cn5); f10 = tk.Frame(cn5)
     #asignacion de los frames al canvas
-    cn5.create_window((200,50),window=f9); cn5.create_window((400,50),window=f10)
+    cn5.create_window((200,5),window=f9); cn5.create_window((400,50),window=f10)
     
     
 
@@ -749,7 +756,6 @@ def Re1():
     fp5.pack_forget()
 
     frame3.pack_forget()
-
 
     f9.bind("<Configure>", lambda e: cn5.configure(scrollregion=cn5.bbox("all")))
     f10.bind("<Configure>", lambda e: cn5.configure(scrollregion=cn5.bbox("all")))
