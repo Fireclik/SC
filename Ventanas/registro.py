@@ -4,7 +4,7 @@ import re
 from tkinter import ttk
 from datetime import datetime
 from tkinter import messagebox
-from Db import execcons
+import sqlite3
 
 def Re1():
     Vr = tk.Tk()
@@ -24,7 +24,7 @@ def Re1():
     nb = ttk.Notebook(Vr); 
     pe1 = ttk.Frame(nb); pe2 = ttk.Frame(nb); pe3 = ttk.Frame(nb); pe4 = ttk.Frame(nb); pe5 = ttk.Frame(nb)#creacion de las pestañas
     nb.add(pe1,text="Datos del Estudiante"); nb.add(pe2,text="Datos Academicos"); nb.add(pe3,text="Datos de la Madre"); nb.add(pe4,text="Datos del Padre"); nb.add(pe5,text="Datos del Representante")#añadir a las pestañas en el notebook
-    nb.pack(); nb.config(height=300,width=600); nb.place(x=100,y=150)
+    nb.pack(); nb.config(height=300,width=600); nb.place(x=70,y=150)
 
     style = ttk.Style() 
     style.configure("TNotebook.Tab", padding=[10, 5]) 
@@ -504,8 +504,322 @@ def Re1():
             return False
 
         return True
-        
+    
+    def registro_estudiante(estudiante_id):
+        dirantbase = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+        dirbasededatos = os.path.join(dirantbase,'DB')
+        pathdb = os.path.join(dirbasededatos,'db')
+
+        #conexion con la base de datos
+        co = sqlite3.connect(pathdb)
+        cur = co.cursor()
+
+        try:
+            #datos del estudiante
+            nombreest = e1.get(); edadest = e2.get(); Ciescolar = e3.get(); fecha = f"{e4_1.get()}/{e4_2.get()}/{e4_3.get()}"
+            peso = e5.get();peso = peso.replace(",","."); talla_c = e6.get(); talla_z = e7.get(); emailest = e8.get(); nacionalidad = e17_2.get()
+            pasaporte = e17_3.get(); observaciones = e17.get(); apellidoest = e9.get(); sexo = cob1.get(); ciest = e10.get()
+            lugarnacimiento = e11.get(); estatura = e12.get();estatura = estatura.replace(",","."); talla_p = e13.get(); direccion = e14.get(); telfmovil = e15.get()
+            enfermedadcronica = e18.get(); anio_cursar = cob2.get(); repite1 = vcb3.get(); repite = "NO"
+
+            estudiante = []; campos =  []
+            estudiante.append(nombreest); campos.append("nombres")
+            estudiante.append(apellidoest); campos.append("apellidos")
+            estudiante.append(fecha); campos.append("fecha_nacimiento")
+            estudiante.append(edadest); campos.append("edad")
+            estudiante.append(sexo); campos.append("sexo")
+            estudiante.append(lugarnacimiento); campos.append("lugar_nacimiento")
+            estudiante.append(nacionalidad); campos.append("nacionalidad")
+
+            if nacionalidad == "Extranjera" :
+                estudiante.append(pasaporte); campos.append("Pasaporte")
+            elif ciest:
+                estudiante.append(ciest); campos.append("ci_estudiante")
+            elif Ciescolar:
+                estudiante.append(Ciescolar); campos.append("cedula_escolar")
+            
+            estudiante.append(estatura); campos.append("estatura")
+            estudiante.append(peso); campos.append("peso")
+            estudiante.append(talla_z); campos.append("talla_zapato")
+            estudiante.append(talla_c); campos.append("talla_camisa")
+            estudiante.append(talla_p); campos.append("talla_pantalon")
+            if vcb2:
+                estudiante.append(enfermedadcronica); campos.append("enfermedad_cronica")
+
+            if vcb1:
+                estudiante.append(observaciones); campos.append("observaciones")
+
+            parametros_estudiante = tuple(estudiante)
+            r_estuiante = f"INSERT INTO estudiantes ({', '.join(campos)}) VALUES ({', '.join(['?' for _ in parametros_estudiante])})"
+            cur.execute(r_estuiante,parametros_estudiante)
+            co.commit()
+
+            cur.execute('SELECT last_insert_rowid()')
+            estudiante_id = cur.fetchone()[0]
+            print("Debug: Resultado de la insercion del estudiante: ", estudiante_id)
+
+            #contactos
+
+            contactos = []; camposc = []
+            contactos.append(direccion); camposc.append("direccion")
+            if telfmovil:
+                contactos.append(telfmovil); camposc.append("telefono_movil")
+
+            if emailest:
+                contactos.append(emailest); camposc.append("email")
+
+            parametros_contactos = tuple(contactos)
+            r_contacto = f"INSERT INTO contactos ({', '.join(camposc)}) VALUES ({', '.join(['?' for _ in parametros_contactos])})"
+            cur.execute(r_contacto,parametros_contactos)
+            co.commit()
+
+            cur.execute('SELECT last_insert_rowid()')
+            contacto_id = cur.fetchone()[0]
+            print("Debug: Resultado de la insercion de Contactos: ", contacto_id)
+
+            cur.execute('INSERT INTO estudiantes_contactos (estudiante_id, contacto_id) VALUES (?, ?)',(estudiante_id, contacto_id))
+            co.commit()
+
+            #academicos
+            academicos = []; camposa = []
+            academicos.append(anio_cursar); camposa.append("anio_a_cursar")
+            if repite1:
+                repite = "SI"
+                academicos.append(repite); camposa.append("repite")
+            else:
+                repite = "NO"
+                academicos.append(repite); camposa.append("repite")
+
+            academicos.append(estudiante_id); camposa.append("estudiante_id")
+            parametros_academicos = tuple(academicos)
+            r_academicos = f"INSERT INTO academicos ({', '.join(camposa)}) VALUES ({', '.join(['?' for _ in parametros_academicos])})"
+            cur.execute(r_academicos,parametros_academicos)
+            co.commit()
+
+        except sqlite3.Error as e:
+            print("Hubo un problema con la operacion en la base de de datos",e)
+            co.rollback()
+
+        finally:
+            cur.close()
+            co.rollback()
+
+        return estudiante_id
+    
+    def Registrar_madre(estudiante_id):
+        dirantbase = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+        dirbasededatos = os.path.join(dirantbase,'DB')
+        pathdb = os.path.join(dirbasededatos,'db')
+
+        #conexion con la base de datos
+        co = sqlite3.connect(pathdb)
+        cur = co.cursor()
+
+        try:
+            #datos de la madre
+            nombreapemadre = e19.get(); cimadre = e20.get(); direcmadre = e21.get(); telfmmadre = e22.get(); telfhmadre = e23.get()
+            emilmadre = e24.get(); viveesmadre = vcb5.get();Viveconestudiante = "NO"; esrepremadre = vcb7.get(); trabajamadre = vcb6.get();trabaja = "NO" ; telftmadre = e25.get()
+
+            madre = []; camposm = []
+            madre.append(nombreapemadre); camposm.append("nombre_apellido")
+            madre.append(cimadre); camposm.append("ci")
+            madre.append(direcmadre); camposm.append("direccion")
+            if telfmmadre:
+                madre.append(telfmmadre); camposm.append("telefono_movil")
+
+            if telfhmadre:
+                madre.append(telfhmadre); camposm.append("telefono_habitacion")
+
+            if telftmadre:
+                madre.append(telftmadre); camposm.append("telefono_trabajo")
+
+            if emilmadre:
+                madre.append(emilmadre); camposm.append("email")
+
+            if viveesmadre:
+                Viveconestudiante = "SI"
+                madre.append(Viveconestudiante); camposm.append("vive_con_estudiante")
+            else:
+                Viveconestudiante = "NO"
+                madre.append(Viveconestudiante); camposm.append("vive_con_estudiante")
+
+            if trabajamadre:
+                trabaja = "SI"
+                madre.append(trabaja); camposm.append("trabaja")
+            else:
+                trabaja = "NO"
+                madre.append(trabaja); camposm.append("trabaja")
+
+
+            parametros_madre = tuple(madre)
+            r_madre = f"INSERT INTO adultos ({', '.join(camposm)}) VALUES ({', '.join(['?' for _ in parametros_madre])})"
+            cur.execute(r_madre,parametros_madre)
+            co.commit()
+
+            cur.execute('SELECT last_insert_rowid()')
+            madre_id = cur.fetchone()[0]
+            print("Debug: Resultado de la insercion de Madre: ", madre_id)
+
+            cur.execute('INSERT INTO estudiante_adultos (estudiante_id, adulto_id, tipo_relacion) VALUES (?, ?, ?)',(estudiante_id, madre_id, "MADRE"))
+            co.commit()
+
+            if esrepremadre:
+                cur.execute('INSERT INTO estudiante_adultos (estudiante_id, adulto_id, tipo_relacion) VALUES (?, ?, ?)',(estudiante_id, madre_id, "REPRESENTANTE"))
+                co.commit()
+
+
+        except sqlite3.Error as e:
+            print("Hubo un problema con la operacion en la base de de datos",e)
+            co.rollback()
+
+        finally:
+            cur.close()
+            co.rollback()
+        return
+    
+    def Registrar_padre(estudiante_id):
+        dirantbase = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+        dirbasededatos = os.path.join(dirantbase,'DB')
+        pathdb = os.path.join(dirbasededatos,'db')
+
+        #conexion con la base de datos
+        co = sqlite3.connect(pathdb)
+        cur = co.cursor()
+
+        try:
+            #datos del padre 
+            nombreapepadre = e26.get(); cipadre = e27.get(); direcpadre = e28.get() ; telfmpadre = e29.get(); telfhpadre = e30.get()
+            emilpadre = e31.get() ; viveespadre = vcb9.get(); esreprepadre = vcb10.get(); trabajapadre = vcb11.get(); telftpadre = e32.get()
+
+            padre = []; camposp = []
+            padre.append(nombreapepadre); camposp.append("nombre_apellido")
+            padre.append(cipadre); camposp.append("ci")
+            padre.append(direcpadre); camposp.append("direccion")
+            if telfmpadre:
+                padre.append(telfmpadre); camposp.append("telefono_movil")
+
+            if telfhpadre:
+                padre.append(telfhpadre); camposp.append("telefono_habitacion")
+
+            if telftpadre:
+                padre.append(telftpadre); camposp.append("telefono_trabajo")
+
+            if emilpadre:
+                padre.append(emilpadre); camposp.append("email")
+
+            if viveespadre:
+                Viveconestudiante = "SI"
+                padre.append(Viveconestudiante); camposp.append("vive_con_estudiante")
+            else:
+                Viveconestudiante = "NO"
+                padre.append(Viveconestudiante); camposp.append("vive_con_estudiante")
+
+            if trabajapadre:
+                trabaja = "SI"
+                padre.append(trabaja); camposp.append("trabaja")
+            else :
+                trabaja = "NO"
+                padre.append(trabaja); camposp.append("trabaja")
+
+            parametros_padre = tuple(padre)
+            r_padre = f"INSERT INTO adultos ({', '.join(camposp)}) VALUES ({', '.join(['?' for _ in parametros_padre])})"
+            cur.execute(r_padre,parametros_padre)
+            co.commit()
+
+            cur.execute('SELECT last_insert_rowid()')
+            padre_id = cur.fetchone()[0]
+            print("Debug: Resultado de la insercion de Padre: ", padre_id)
+
+            cur.execute('INSERT INTO estudiante_adultos (estudiante_id, adulto_id, tipo_relacion) VALUES (?, ?, ?)',(estudiante_id, padre_id, "PADRE"))
+            co.commit()
+
+            if esreprepadre:
+                cur.execute('INSERT INTO estudiante_adultos (estudiante_id, adulto_id, tipo_relacion) VALUES (?, ?, ?)',(estudiante_id, padre_id, "REPRESENTANTE"))
+                co.commit()
+
+
+        except sqlite3.Error as e:
+            print("Hubo un problema con la operacion en la base de de datos",e)
+            co.rollback()
+
+        finally:
+            cur.close()
+            co.rollback()
+        return
+    
+    def Registrar_Representante(estudiante_id):
+        dirantbase = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+        dirbasededatos = os.path.join(dirantbase,'DB')
+        pathdb = os.path.join(dirbasededatos,'db')
+
+        #conexion con la base de datos
+        co = sqlite3.connect(pathdb)
+        cur = co.cursor()
+
+        try:
+            #datos del representante
+            nombreaperepresentante = e33.get(); cirepresentante = e34.get(); direcrepresentante = e35.get() ; telfmrepresentante = e36.get(); telfhrepresentante = e37.get()
+            emilrepresentante = e38.get() ; viveesrepresentante = vcb13.get(); trabajarepresentante = vcb14.get(); telftrepresentante = e39.get(); tiporepresentante = e40.get()
+
+            representante = []; camposr = []
+            representante.append(nombreaperepresentante); camposr.append("nombre_apellido")
+            representante.append(cirepresentante); camposr.append("ci")
+            representante.append(direcrepresentante); camposr.append("direccion")
+            if telfmrepresentante:
+                representante.append(telfmrepresentante); camposr.append("telefono_movil")
+
+            if telfhrepresentante:
+                representante.append(telfhrepresentante); camposr.append("telefono_habitacion")
+
+            if telftrepresentante:
+                representante.append(telftrepresentante); camposr.append("telefono_trabajo")
+
+            if emilrepresentante:
+                representante.append(emilrepresentante); camposr.append("email")
+
+            if viveesrepresentante:
+                Viveconestudiante = "SI"
+                representante.append(Viveconestudiante); camposr.append("vive_con_estudiante")
+            else:
+                Viveconestudiante = "NO"
+                representante.append(Viveconestudiante); camposr.append("vive_con_estudiante")
+
+            if trabajarepresentante:
+                trabaja = "SI"
+                representante.append(trabaja); camposr.append("trabaja")
+            else :
+                trabaja = "NO"
+                representante.append(trabaja); camposr.append("trabaja")
+
+            parametros_representante = tuple(representante)
+            r_representante = f"INSERT INTO adultos ({', '.join(camposr)}) VALUES ({', '.join(['?' for _ in parametros_representante])})"
+            cur.execute(r_representante,parametros_representante)
+            co.commit()
+
+            cur.execute('SELECT last_insert_rowid()')
+            representante_id = cur.fetchone()[0]
+            print("Debug: Resultado de la insercion de Representante: ", representante_id)
+
+            cur.execute('INSERT INTO estudiante_adultos (estudiante_id, adulto_id, tipo_relacion) VALUES (?, ?, ?)',(estudiante_id, representante_id, tiporepresentante))
+            co.commit()
+
+            cur.execute('INSERT INTO estudiante_adultos (estudiante_id, adulto_id, tipo_relacion) VALUES (?, ?, ?)',(estudiante_id, representante_id, "REPRESENTANTE"))
+            co.commit()
+
+
+        except sqlite3.Error as e:
+            print("Hubo un problema con la operacion en la base de de datos",e)
+            co.rollback()
+
+        finally:
+            cur.close()
+            co.rollback()
+        return
+
+
+
     def btacc():
+        estudiante_id = 0
         madre = 0
         padre = 0
         representante = 0
@@ -538,8 +852,21 @@ def Re1():
 
         if padre == 0 and madre == 0 and representante == 0:
             messagebox.showerror("Error","El estudiante tiene que ser representado por alguien")
-            return 
-                
+            return
+        
+
+        estudiante_id = registro_estudiante(estudiante_id)
+        print("Estudiante Id: ", estudiante_id)
+
+        if madre == 2: 
+            Registrar_madre(estudiante_id)
+        
+        if padre == 2:
+            Registrar_padre(estudiante_id)
+
+        if representante == 2:
+            Registrar_Representante(estudiante_id)
+
         messagebox.showinfo("Datos ingresados","Datos ingresados Correctamente")
 
     #frame 1 entradas y labels

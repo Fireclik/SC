@@ -135,7 +135,8 @@ def execcons(cons, param=()):
 def exselccons(cons, param=()):
     co = sqlite3.connect(pathdb)
     cur = co.cursor()
-    cur.execute(cons,param)
+    cur.execute(cons, param)
     rr = cur.fetchall()
-    co.commit()
+    cur.close()
     co.close()
+    return rr if rr else []
