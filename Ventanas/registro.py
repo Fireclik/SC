@@ -596,6 +596,13 @@ def Re1():
             cur.execute(r_academicos,parametros_academicos)
             co.commit()
 
+            # Relacionar con materias del año correspondiente
+            materias = cur.execute('''SELECT id FROM materias WHERE anio = ?''', (anio_cursar,)).fetchall()
+            for materia in materias:
+                cur.execute('''INSERT INTO estudiante_materias (estudiante_id, materia_id, es_pendiente) 
+                           VALUES (?, ?, ?)''', (estudiante_id, materia[0], False))
+            co.commit()
+            
         except sqlite3.Error as e:
             print("Hubo un problema con la operacion en la base de de datos",e)
             co.rollback()
@@ -816,6 +823,47 @@ def Re1():
             co.rollback()
         return
 
+    def limpieza():
+            #estudiante
+            e1.delete(0,tk.END);e2.delete(0,tk.END);e3.delete(0,tk.END);e4_1.delete(0,tk.END);e4_2.delete(0,tk.END);e4_3.delete(0,tk.END)
+            e5.delete(0,tk.END);e6.set("[Seleccione]");e7.delete(0,tk.END);e8.delete(0,tk.END);e17_2.set("Venezolana")
+            e17_3.delete(0,tk.END);e17.delete(0,tk.END);e9.delete(0,tk.END);cob1.set("[Seleccione una opcion]");e10.delete(0,tk.END)
+            e11.delete(0,tk.END);e12.delete(0,tk.END);e13.delete(0,tk.END);e14.delete(0,tk.END);e15.delete(0,tk.END)
+            e18.delete(0,tk.END);cob2.set("[Seleccione una opcion]");vcb3.set(False)
+            #madre
+            e19.delete(0,tk.END)
+            e20.delete(0,tk.END)
+            e21.delete(0,tk.END)
+            e22.delete(0,tk.END)
+            e23.delete(0,tk.END)
+            e24.delete(0,tk.END)
+            e25.delete(0,tk.END)
+            vcb5.set(False)
+            vcb6.set(False)
+            vcb7.set(False)
+            #padre
+            e26.delete(0,tk.END)
+            e27.delete(0,tk.END)
+            e28.delete(0,tk.END)
+            e29.delete(0,tk.END)
+            e30.delete(0,tk.END)
+            e31.delete(0,tk.END)
+            e32.delete(0,tk.END)
+            vcb9.set(False)
+            vcb10.set(False)
+            vcb11.set(False)
+            #representante
+            frame3.pack_forget()
+            e33.delete(0,tk.END)
+            e34.delete(0,tk.END)
+            e35.delete(0,tk.END)
+            e36.delete(0,tk.END)
+            e37.delete(0,tk.END)
+            e38.delete(0,tk.END)
+            e39.delete(0,tk.END)
+            e40.delete(0,tk.END)
+            vcb13.set(False)
+            vcb14.set(False)
 
 
     def btacc():
@@ -866,6 +914,8 @@ def Re1():
 
         if representante == 2:
             Registrar_Representante(estudiante_id)
+
+        limpieza()
 
         messagebox.showinfo("Datos ingresados","Datos ingresados Correctamente")
 

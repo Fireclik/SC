@@ -2,8 +2,11 @@ import tkinter as tk
 import os
 from tkinter import messagebox
 from tkinter import ttk
+import sqlite3
 
 an1 = 0; an2 = 0; an3 = 0; an4 = 0; an5 = 0; an6 = 0;ventana = False
+
+    
 
 def Re2():
     global an1,an2,an3,an4,an5,an6
@@ -59,7 +62,49 @@ def Re2():
         return True
     
     def registrar_materia():
-        pass
+        #Datos de la materia
+        nombre_materia = e1.get()
+        abreviatura = e3.get()
+        nombre_docente = e4.get()
+        ci_docente = e5.get()
+        global an1, an2, an3, an4, an5, an6
+        dirantbase = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+        dirbasededatos = os.path.join(dirantbase,'DB')
+        pathdb = os.path.join(dirbasededatos,'db')
+
+        #conexion con la base de datos
+        co = sqlite3.connect(pathdb)
+        cur = co.cursor()
+        try:
+            años = ["1er Año", "2do Año", "3er Año", "4to Año", "5to Año", "6to Año"]
+            anios_check = [an1, an2, an3, an4, an5, an6]
+
+            for i, check in enumerate(anios_check):
+                if check == 1:
+                    anio = años[i]
+                    cur.execute('''INSERT INTO materias (nombre, abreviatura, n_docente, ci_docente, anio) 
+                                VALUES (?, ?, ?, ?, ?)''', (nombre_materia, abreviatura, nombre_docente, ci_docente, anio))
+                    
+                    materia_id = cur.lastrowid
+
+                    # obtener estudiantes del año correspondiente
+                    estudiantes = cur.execute('''SELECT id FROM estudiantes WHERE id IN 
+                                                (SELECT estudiante_id FROM academicos WHERE anio_a_cursar = ?)''', (anio,)).fetchall()
+
+                    for estudiante in estudiantes:
+                        cur.execute('''INSERT INTO estudiante_materias (estudiante_id, materia_id, es_pendiente) 
+                                    VALUES (?, ?, ?)''', (estudiante[0], materia_id, False))
+                    
+            co.commit()
+            print("Materia registrada exitosamente.")
+        except sqlite3.Error as e:
+            print("Hubo un problema con la operacion en la base de datos: ",e)
+            co.rollback()
+        finally:
+            cur.close()
+            co.rollback()
+
+
     
     def popup():
         global an1, an2, an3, an4, an5, an6, ventana
@@ -72,7 +117,6 @@ def Re2():
             pop.resizable(width=False,height=False)
             pop.iconbitmap(icopath)
             print("Entro")
-            
 
             v1 = tk.BooleanVar(); cb1 = tk.Checkbutton(pop,text="1er Año",variable=v1).pack(pady=5)
             if an1 == 1:
@@ -139,16 +183,18 @@ def Re2():
         global ventana
         ventana = False
         pop.destroy()
+    
+    def limpieza():
+        global an1,an2,an3,an4,an5,an6
+        e1.delete(0,tk.END);e3.delete(0,tk.END);e4.delete(0,tk.END);e5.delete(0,tk.END)
+        an1 = 0; an2 = 0; an3 = 0; an4 = 0; an5 = 0; an6 = 0
 
     def btacc():
         if not valdedatos():
             return
         
-        #Datos de la materia
-        nombre_materia = e1.get(); abreviatura = e3.get(); nombre_docente = e4.get(); ci_docente = e5.get()
-        
-
-
+        registrar_materia()
+        limpieza()
         messagebox.showinfo("Exito","Datos ingresados Correctamente")
 
     #Creacion del notebook
