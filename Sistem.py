@@ -2,13 +2,18 @@ import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from Ventanas import menu
 
+def centrar_ventana(ventana, ancho, alto):
+    pantalla_ancho = ventana.winfo_screenwidth()
+    pantalla_alto = ventana.winfo_screenheight()
+    x = int((pantalla_ancho / 2) - (ancho / 2))
+    y = int((pantalla_alto / 2) - (alto / 2))
+    ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
 
 def Log1():
     Vl = tk.Tk()
     Vl.title(string="Login")
-    Vl.geometry("800x600+350+50")
+    centrar_ventana(Vl, 800, 600)
     Vl.resizable(width=False,height=False)
 
     #importar icono
@@ -44,16 +49,25 @@ def Log1():
         con = contrasena.get()
         if us == "admins321" and con == "123sni":
             messagebox.showinfo("Correcto","Datos ingresados correctamente")
-            Vl.destroy()
-            menu.M1()
+            e1.delete(0,tk.END)
+            e2.delete(0,tk.END)
+            Vl.withdraw()
+            from Ventanas.menu import M1
+            M1(Vl, 1)
         elif us == "subad22" and con == "22mm":
             messagebox.showinfo("Correcto","Datos ingresados correctamente")
-            Vl.destroy()
-            menu.M2()
+            e1.delete(0,tk.END)
+            e2.delete(0,tk.END)
+            from Ventanas.menu import M2
+            Vl.withdraw()
+            M2(Vl, 2)
         elif us == "70eta" and con == "eta":
             messagebox.showinfo("Correcto","Datos ingresados correctamente")
-            Vl.destroy()
-            menu.M3()
+            e1.delete(0,tk.END)
+            e2.delete(0,tk.END)
+            Vl.withdraw()
+            from Ventanas.menu import M3
+            M3(Vl, 3)
         else:
             messagebox.showerror("Error","Usuario o Contraseña incorrectos")
 
@@ -64,3 +78,4 @@ def Log1():
 
     Vl.mainloop()
 Log1()
+    

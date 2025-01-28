@@ -6,13 +6,18 @@ import sqlite3
 
 an1 = 0; an2 = 0; an3 = 0; an4 = 0; an5 = 0; an6 = 0;ventana = False
 
-    
+def centrar_ventana(ventana, ancho, alto):
+    pantalla_ancho = ventana.winfo_screenwidth()
+    pantalla_alto = ventana.winfo_screenheight()
+    x = int((pantalla_ancho / 2) - (ancho / 2))
+    y = int((pantalla_alto / 2) - (alto / 2))
+    ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
 
-def Re2():
+def Re2(master, nivel):
     global an1,an2,an3,an4,an5,an6
-    Vrm = tk.Tk()
+    Vrm = tk.Toplevel(master)
     Vrm.title("Registro de Materias")
-    Vrm.geometry("800x600+400+50")
+    centrar_ventana(Vrm,800,600)
     Vrm.resizable(width=False,height=False)
     #importar icono
     icdir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -221,12 +226,26 @@ def Re2():
 
     ttk.Label(f2,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f2,text="Nombre del docente asignado").pack(padx=4,pady=5)
     e4 = tk.Entry(f2,width=20); e4.pack(pady=5)
-    ttk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f1,text="Ci del docente asignado").pack(padx=4,pady=5)
+    ttk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); ttk.Label(f1,text="CI del docente asignado").pack(padx=4,pady=5)
     e5 = tk.Entry(f1,width=20); e5.pack(pady=5)
     
     f1.pack(side=tk.LEFT,fill=tk.BOTH,expand=1);f2.pack(side=tk.RIGHT,fill=tk.BOTH,expand=1)
 
+    def comeback():
+            Vrm.destroy()
+            if nivel == 1:
+                from Ventanas.menu import M1
+                M1(master, 1)
+            if nivel == 2:
+                from Ventanas.menu import M2
+                M2(master, 2)
+            if nivel == 3:
+                from Ventanas.menu import M3
+                M3(master, 3)
+
+    Vrm.protocol("WM_DELETE_WINDOW", comeback)
+
     bt = tk.Button(Vrm,text="Registrar",font=("Cascadia Mono",12),command=btacc); bt.pack(); bt.place(x=350,y=500)
+    bt3 = tk.Button(Vrm,text="Regresar",font=("Cascadia Mono",12),command=comeback); bt3.pack(); bt3.place(x=150,y=500)
 
     Vrm.mainloop()
-Re2()

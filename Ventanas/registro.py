@@ -6,10 +6,17 @@ from datetime import datetime
 from tkinter import messagebox
 import sqlite3
 
-def Re1():
-    Vr = tk.Tk()
+def centrar_ventana(ventana, ancho, alto):
+    pantalla_ancho = ventana.winfo_screenwidth()
+    pantalla_alto = ventana.winfo_screenheight()
+    x = int((pantalla_ancho / 2) - (ancho / 2))
+    y = int((pantalla_alto / 2) - (alto / 2))
+    ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
+
+def Re1(master, nivel):
+    Vr = tk.Toplevel(master)
     Vr.title(string="Registro Estudiantes")
-    Vr.geometry("800x600+350+50")
+    centrar_ventana(Vr,800,600)
     Vr.resizable(width=False,height=False)
     #importar icono
     icdir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
@@ -826,10 +833,10 @@ def Re1():
     def limpieza():
             #estudiante
             e1.delete(0,tk.END);e2.delete(0,tk.END);e3.delete(0,tk.END);e4_1.delete(0,tk.END);e4_2.delete(0,tk.END);e4_3.delete(0,tk.END)
-            e5.delete(0,tk.END);e6.set("[Seleccione]");e7.delete(0,tk.END);e8.delete(0,tk.END);e17_2.set("Venezolana")
+            e5.delete(0,tk.END);e6.set("[Seleccione]");e7.delete(0,tk.END);e8.delete(0,tk.END);e17_2.set("Venezolana"); combobox_nacionalidad()
             e17_3.delete(0,tk.END);e17.delete(0,tk.END);e9.delete(0,tk.END);cob1.set("[Seleccione una opcion]");e10.delete(0,tk.END)
             e11.delete(0,tk.END);e12.delete(0,tk.END);e13.delete(0,tk.END);e14.delete(0,tk.END);e15.delete(0,tk.END)
-            e18.delete(0,tk.END);cob2.set("[Seleccione una opcion]");vcb3.set(False)
+            e18.delete(0,tk.END);cob2.set("[Seleccione una opcion]");vcb3.set(False); vcb1.set(False); vcb2.set(False);ecb_ob();ecb_ob2()
             #madre
             e19.delete(0,tk.END)
             e20.delete(0,tk.END)
@@ -838,9 +845,10 @@ def Re1():
             e23.delete(0,tk.END)
             e24.delete(0,tk.END)
             e25.delete(0,tk.END)
+            vcb4.set(True); notienemadre()
             vcb5.set(False)
-            vcb6.set(False)
-            vcb7.set(False)
+            vcb6.set(False); ecb_ob3()
+            vcb7.set(False); esrepresentante1()
             #padre
             e26.delete(0,tk.END)
             e27.delete(0,tk.END)
@@ -849,9 +857,10 @@ def Re1():
             e30.delete(0,tk.END)
             e31.delete(0,tk.END)
             e32.delete(0,tk.END)
+            vcb8.set(True); notienepadre()
             vcb9.set(False)
-            vcb10.set(False)
-            vcb11.set(False)
+            vcb10.set(False); esrepresentante2()
+            vcb11.set(False); ecb_ob4()
             #representante
             frame3.pack_forget()
             e33.delete(0,tk.END)
@@ -862,8 +871,9 @@ def Re1():
             e38.delete(0,tk.END)
             e39.delete(0,tk.END)
             e40.delete(0,tk.END)
+            vcb12.set(False); esrepresentante3()
             vcb13.set(False)
-            vcb14.set(False)
+            vcb14.set(False); representantetrabaja()
 
 
     def btacc():
@@ -1138,8 +1148,20 @@ def Re1():
     f10.bind("<Configure>", lambda e: cn5.configure(scrollregion=cn5.bbox("all")))
 
     Vr.bind_all("<MouseWheel>",on_mousewheel)
-    
+
+    def comeback():
+            Vr.destroy()
+            if nivel == 1:
+                from Ventanas.menu import M1
+                M1(master, 1)
+            if nivel == 2:
+                from Ventanas.menu import M2
+                M2(master, 2)
+            if nivel == 3:
+                from Ventanas.menu import M3
+                M3(master, 3)
+
+    Vr.protocol("WM_DELETE_WINDOW", comeback)
     bt1 = tk.Button(Vr,text="Registrar",font=("Cascadia Mono",12),command=btacc); bt1.pack(); bt1.place(x=350,y=500)
+    bt2 = tk.Button(Vr,text="Regresar",font=("Cascadia Mono",12),command=comeback); bt2.pack(); bt2.place(x=150,y=500)
     Vr.mainloop()
-    
-Re1()
