@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+import sys
 from Ventanas import Db
 
 def centrar_ventana(ventana, ancho, alto):
@@ -9,6 +10,8 @@ def centrar_ventana(ventana, ancho, alto):
     y = int((pantalla_alto / 2) - (alto / 2))
     ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
 
+    ventana.wm_attributes("-topmost", 1)
+
 #definicion de menu
 def M1(master, nivel):
     Vm = tk.Toplevel(master)
@@ -16,13 +19,20 @@ def M1(master, nivel):
     centrar_ventana(Vm, 800, 600)
     Vm.resizable(width=False,height=False)
     #importar icono
-    icdir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-    icodir = os.path.join(icdir,'imag') 
-    icopath = os.path.join(icodir,'Log.ico') 
-    Vm.iconbitmap(icopath)
+    def rutas1(ruta1):
+        try:
+            rutabase = sys.__MEIPASS
+        except Exception:
+            rutabase = os.path.abspath(".")
+        return os.path.join(rutabase,ruta1)
+
+    ruta1 = rutas1(r"Imag\Log.ico")
+    ruta2 = rutas1(r"Imag\f1.png")
+    
+    Vm.iconbitmap(ruta1)
     #importar imagen fondo
-    dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..')); idir = os.path.join(dir,'imag') ; ipath = os.path.join(idir,'f1.png') 
-    fv = tk.PhotoImage(file=ipath); tk.Label(Vm,image=fv).place(x=0,y=0,relheight=1,relwidth=1)
+     
+    fv = tk.PhotoImage(file=ruta2); tk.Label(Vm,image=fv).place(x=0,y=0,relheight=1,relwidth=1)
 
     def boton():
         def btregistrar():
@@ -58,9 +68,22 @@ def M1(master, nivel):
             Vm.destroy()
             master.deiconify()
 
+        def administrar():
+            rebt.destroy()
+            logut.destroy()
+            adbt.destroy()
+            def btconsul():
+                Vm.destroy()
+                from Ventanas.consultaestu import Con1
+                Con1(master, nivel)
+
+            cbt = tk.Button(Vm,text="Consulta", font=("Cascadia Mono",12),command=btconsul,width=20,height=1); cbt.pack()
+            cbt.place(x=310,y=200)
+
+
         rebt = tk.Button(Vm,text="Registro", font=("Cascadia Mono",12),command=btregistrar,width=20,height=1); rebt.pack()
         rebt.place(x=310,y=200)
-        adbt = tk.Button(Vm,text="Administrar", font=("Cascadia Mono",12),width=20,height=1); adbt.pack()
+        adbt = tk.Button(Vm,text="Administrar", font=("Cascadia Mono",12),width=20,height=1, command=administrar); adbt.pack()
         adbt.place(x=310,y=300)
         logut = tk.Button(Vm,text="Salir",font = ("Cascadia Mono",12),command=loguto,width=20,height=1); logut.pack()
         logut.place(x=310,y=400)
@@ -77,13 +100,20 @@ def M2(master, nivel):
     centrar_ventana(Vm, 800, 600)
     Vm.resizable(width=False,height=False)
     #importar icono
-    icdir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-    icodir = os.path.join(icdir,'imag') 
-    icopath = os.path.join(icodir,'Log.ico') 
-    Vm.iconbitmap(icopath)
+    def rutas1(ruta1):
+        try:
+            rutabase = sys.__MEIPASS
+        except Exception:
+            rutabase = os.path.abspath(".")
+        return os.path.join(rutabase,ruta1)
+
+    ruta1 = rutas1(r"Imag\Log.ico")
+    ruta2 = rutas1(r"Imag\f1.png")
+    
+    Vm.iconbitmap(ruta1)
     #importar imagen fondo
-    dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..')); idir = os.path.join(dir,'imag') ; ipath = os.path.join(idir,'f1.png') 
-    fv = tk.PhotoImage(file=ipath); tk.Label(Vm,image=fv).place(x=0,y=0,relheight=1,relwidth=1)
+     
+    fv = tk.PhotoImage(file=ruta2); tk.Label(Vm,image=fv).place(x=0,y=0,relheight=1,relwidth=1)
 
     def boton():
 
@@ -109,13 +139,20 @@ def M3(master, nivel):
     centrar_ventana(Vm, 800, 600)
     Vm.resizable(width=False,height=False)
     #importar icono
-    icdir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
-    icodir = os.path.join(icdir,'imag') 
-    icopath = os.path.join(icodir,'Log.ico') 
-    Vm.iconbitmap(icopath)
+    def rutas1(ruta1):
+        try:
+            rutabase = sys.__MEIPASS
+        except Exception:
+            rutabase = os.path.abspath(".")
+        return os.path.join(rutabase,ruta1)
+
+    ruta1 = rutas1(r"Imag\Log.ico")
+    ruta2 = rutas1(r"Imag\f1.png")
+    
+    Vm.iconbitmap(ruta1)
     #importar imagen fondo
-    dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..')); idir = os.path.join(dir,'imag') ; ipath = os.path.join(idir,'f1.png') 
-    fv = tk.PhotoImage(file=ipath); tk.Label(Vm,image=fv).place(x=0,y=0,relheight=1,relwidth=1)
+     
+    fv = tk.PhotoImage(file=ruta2); tk.Label(Vm,image=fv).place(x=0,y=0,relheight=1,relwidth=1)
 
     def boton():
 

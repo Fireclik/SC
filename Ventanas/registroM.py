@@ -13,6 +13,8 @@ def centrar_ventana(ventana, ancho, alto):
     y = int((pantalla_alto / 2) - (alto / 2))
     ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
 
+    ventana.wm_attributes("-topmost", 1)
+
 def Re2(master, nivel):
     global an1,an2,an3,an4,an5,an6
     Vrm = tk.Toplevel(master)
@@ -121,6 +123,7 @@ def Re2(master, nivel):
             pop.geometry("200x300+500+300")
             pop.resizable(width=False,height=False)
             pop.iconbitmap(icopath)
+            pop.wm_attributes("-topmost", 1)
             print("Entro")
 
             v1 = tk.BooleanVar(); cb1 = tk.Checkbutton(pop,text="1er Año",variable=v1).pack(pady=5)
@@ -232,6 +235,7 @@ def Re2(master, nivel):
     f1.pack(side=tk.LEFT,fill=tk.BOTH,expand=1);f2.pack(side=tk.RIGHT,fill=tk.BOTH,expand=1)
 
     def comeback():
+            limpieza()
             Vrm.destroy()
             if nivel == 1:
                 from Ventanas.menu import M1

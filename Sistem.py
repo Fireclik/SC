@@ -1,4 +1,5 @@
 import os
+import sys
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -10,25 +11,27 @@ def centrar_ventana(ventana, ancho, alto):
     y = int((pantalla_alto / 2) - (alto / 2))
     ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
 
+    ventana.wm_attributes("-topmost", 1)
+
 def Log1():
     Vl = tk.Tk()
     Vl.title(string="Login")
     centrar_ventana(Vl, 800, 600)
     Vl.resizable(width=False,height=False)
 
-    #importar icono
-    icdir = os.path.dirname(__file__)
-    icodir = os.path.join(icdir,'imag')
-    icopath = os.path.join(icodir,'Log.ico')
+    def rutas1(ruta1):
+        try:
+            rutabase = sys.__MEIPASS
+        except Exception:
+            rutabase = os.path.abspath(".")
+        return os.path.join(rutabase,ruta1)
 
-    Vl.iconbitmap(icopath)
+    ruta1 = rutas1(r"Imag\Log.ico")
+    ruta2 = rutas1(r"Imag\Lg1.png")
+    
+    Vl.iconbitmap(ruta1)
 
-    #importar imagen de fondo
-    cdir = os.path.dirname(__file__) #obtener la direccion actual de sistem.py
-    imgdir = os.path.join(cdir,'imag') #obtener la direccion de la carpeta o ruta completa
-    imgpath = os.path.join(imgdir,'Lg1.png') #especificacion del archivo
-
-    Fv = tk.PhotoImage(file=imgpath)#guardar la imagen en una variable funcional en modo tkinter
+    Fv = tk.PhotoImage(file=ruta2)
     lb1 = tk.Label(Vl,image=Fv).place(x=0,y=0,relheight=1,relwidth=1)#colocar la imagen en la ventana
 
     #variables de la entrada

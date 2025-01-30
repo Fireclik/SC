@@ -12,6 +12,8 @@ def centrar_ventana(ventana, ancho, alto):
     x = int((pantalla_ancho / 2) - (ancho / 2))
     y = int((pantalla_alto / 2) - (alto / 2))
     ventana.geometry(f'{ancho}x{alto}+{x}+{y}')
+    
+    ventana.wm_attributes("-topmost", 1)
 
 def Re1(master, nivel):
     Vr = tk.Toplevel(master)
@@ -132,6 +134,17 @@ def Re1(master, nivel):
             e32.delete(0,tk.END)
     
     def combobox_nacionalidad(event):
+        if e17_2.get() == "Venezolana":
+            fp_2.pack_forget()
+            e17_3.delete(0,tk.END)
+        elif e17_2.get() == "Extranjera":
+            fp_2.pack(pady=5)
+            cb1.pack_forget()
+            if vcb1.get():
+                fp.pack_forget()
+            cb1.pack(pady=4)
+            ecb_ob()
+    def combobox_limpieza():
         if e17_2.get() == "Venezolana":
             fp_2.pack_forget()
             e17_3.delete(0,tk.END)
@@ -833,7 +846,7 @@ def Re1(master, nivel):
     def limpieza():
             #estudiante
             e1.delete(0,tk.END);e2.delete(0,tk.END);e3.delete(0,tk.END);e4_1.delete(0,tk.END);e4_2.delete(0,tk.END);e4_3.delete(0,tk.END)
-            e5.delete(0,tk.END);e6.set("[Seleccione]");e7.delete(0,tk.END);e8.delete(0,tk.END);e17_2.set("Venezolana"); combobox_nacionalidad()
+            e5.delete(0,tk.END);e6.set("[Seleccione]");e7.delete(0,tk.END);e8.delete(0,tk.END);e17_2.set("Venezolana"); combobox_limpieza()
             e17_3.delete(0,tk.END);e17.delete(0,tk.END);e9.delete(0,tk.END);cob1.set("[Seleccione una opcion]");e10.delete(0,tk.END)
             e11.delete(0,tk.END);e12.delete(0,tk.END);e13.delete(0,tk.END);e14.delete(0,tk.END);e15.delete(0,tk.END)
             e18.delete(0,tk.END);cob2.set("[Seleccione una opcion]");vcb3.set(False); vcb1.set(False); vcb2.set(False);ecb_ob();ecb_ob2()
@@ -845,7 +858,7 @@ def Re1(master, nivel):
             e23.delete(0,tk.END)
             e24.delete(0,tk.END)
             e25.delete(0,tk.END)
-            vcb4.set(True); notienemadre()
+            vcb4.set(False); notienemadre()
             vcb5.set(False)
             vcb6.set(False); ecb_ob3()
             vcb7.set(False); esrepresentante1()
@@ -857,7 +870,7 @@ def Re1(master, nivel):
             e30.delete(0,tk.END)
             e31.delete(0,tk.END)
             e32.delete(0,tk.END)
-            vcb8.set(True); notienepadre()
+            vcb8.set(False); notienepadre()
             vcb9.set(False)
             vcb10.set(False); esrepresentante2()
             vcb11.set(False); ecb_ob4()
@@ -937,7 +950,7 @@ def Re1(master, nivel):
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Cedula Escolar",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
     e3 = tk.Entry(f1,width=20); e3.pack(pady=5)
     tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="Fecha de Nacimiento",font=("Cascadia Mono",12)).pack(padx=4,pady=4)
-    tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="(dd/mm/aa)",font=("Cascadia Mono",12)).pack(padx=4,pady=5)
+    tk.Label(f1,text=" ",font=("Cascadia Mono",8)).pack(padx=4,pady=5); tk.Label(f1,text="(dd/mm/aaaa)",font=("Cascadia Mono",12)).pack(padx=4,pady=5)
 
     fd = ttk.Frame(f1); fd.pack(pady=5) 
     e4_1 = tk.Entry(fd, width=5); e4_1.pack(side=tk.LEFT, padx=2)
