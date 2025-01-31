@@ -3,7 +3,11 @@ import os
 import sqlite3
 from tkinter import ttk, messagebox
 
-ventana = False
+global modo_administracion, selected_student
+modo_administracion = "nada"
+selected_student = None
+
+ventana = False; ventana2 = False
 
 def centrar_ventana(ventana, ancho, alto):
     pantalla_ancho = ventana.winfo_screenwidth()
@@ -67,8 +71,8 @@ def Con1(master, nivel):
             co.close()
 
     nb = ttk.Notebook(Vc)
-    pe1 = tk.Frame(nb)
-    nb.add(pe1, text="Consulta de Estudiantes")
+    pe1 = tk.Frame(nb); pe2 = tk.Frame(nb)
+    nb.add(pe1, text="Consulta de Estudiantes"); nb.add(pe2, text="Consulta de Materias")
     nb.pack(); nb.config(height=200, width=600); nb.place(x=100, y=150)
 
     frame = ttk.Frame(pe1)
@@ -92,6 +96,7 @@ def Con1(master, nivel):
     # Scrollbar horizontal
     scrollbar_horizontal = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
     tree.configure(xscrollcommand=scrollbar_horizontal.set)
+    tree.bind("<Double-1>", lambda e: manejar_doble_click())
     scrollbar_horizontal.pack(side="bottom", fill="x")
 
     tree.pack(fill="both", expand=True)
@@ -124,8 +129,8 @@ def Con1(master, nivel):
         if not ventana:
             ventana = True
             pop = tk.Toplevel(Vc)
-            pop.title("Seleccionar Año")
-            pop.geometry("400x500+500+300")
+            pop.title("Filtrar")
+            centrar_ventana(pop,400,500)
             pop.resizable(width=False,height=False)
             pop.iconbitmap(icopath)
             pop.wm_attributes("-topmost", 1)
@@ -432,8 +437,354 @@ def Con1(master, nivel):
     bt1e = tk.Button(Vc, text="Filtrar Estudiantes", font=("Cascadia Mono",8),bg="light green", command= filtrar_estudiantes); bt1e.pack()
     bt1e.place(x=250,y=500)
 
+    def validar_modificacion(campo, valor):
+        # Validaciones comunes
+        if campo in ["Nombres", "Apellidos"]:
+            if not valor.strip():
+                messagebox.showerror("Error", "El campo no puede estar vacío")
+                return False
+            if not valor.replace(" ", "").isalpha():
+                messagebox.showerror("Error", "Solo se permiten letras")
+                return False
+        
+        if campo == "Edad":
+            if not valor.isdigit() or len(valor) != 2:
+                messagebox.showerror("Error", "Edad inválida")
+                return False
+        
+        if campo in ["Cédula Escolar", "CI Estudiante"]:
+            if not valor.isdigit():
+                messagebox.showerror("Error", "Solo se permiten dígitos")
+                return False
+        
+        if campo == "Peso":
+            try:
+                float(valor.replace(",", "."))
+            except:
+                messagebox.showerror("Error", "Peso inválido")
+                return False
+        
+        if campo == "Estatura":
+            try:
+                float(valor.replace(",", "."))
+            except:
+                messagebox.showerror("Error", "Estatura inválida")
+                return False
+        
+        if campo == "Talla de Zapatos":
+            if not valor.isdigit() or not (20 <= int(valor) <= 45):
+                messagebox.showerror("Error", "Talla de zapatos inválida")
+                return False
+        
+        # Validaciones específicas de documentos
+        if campo in ["CI Estudiante", "Cédula Escolar", "Pasaporte"]:
+            nacionalidad = selected_student[4]
+            
+            if campo == "Pasaporte" and nacionalidad == "Venezolana":
+                messagebox.showerror("Error", "Venezolanos no pueden tener pasaporte")
+                return False
+            
+            if campo in ["CI Estudiante", "Cédula Escolar"] and nacionalidad == "Extranjera":
+                messagebox.showerror("Error", "Extranjeros deben usar pasaporte")
+                return False
+            
+            # Verificar duplicados en la base de datos
+            dirantbase = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            dirbasededatos = os.path.join(dirantbase, 'DB')
+            pathdb = os.path.join(dirbasededatos, 'db')
+            
+            try:
+                co = sqlite3.connect(pathdb)
+                cur = co.cursor()
+                cur.execute(f"SELECT COUNT(*) FROM estudiantes WHERE {campo} = ?", (valor,))
+                if cur.fetchone()[0] > 0:
+                    messagebox.showerror("Error", "¡Este documento ya existe!")
+                    return False
+            except sqlite3.Error as e:
+                messagebox.showerror("Error", f"Error de base de datos: {str(e)}")
+                return False
+            finally:
+                cur.close()
+                co.close()
+        return True
+
+    def manejar_doble_click():
+        global selected_student
+        selected_student = None 
+        
+        # Verificar si hay algo seleccionado
+        if not tree.selection():
+            messagebox.showwarning("Advertencia", "Seleccione un estudiante primero")
+            return
+        
+        try:
+            item = tree.selection()[0]
+            selected_student = tree.item(item)['values']
+            
+            if not selected_student:
+                messagebox.showwarning("Advertencia", "No se pudo obtener los datos del estudiante")
+                return
+                
+            if modo_administracion == "modificar":
+                ventana_modificacion()
+            elif modo_administracion == "eliminar":
+                confirmar_eliminacion()
+                
+        except IndexError:
+            messagebox.showerror("Error", "No se pudo obtener el registro seleccionado")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error inesperado: {str(e)}")
+    
+    def ventana_modificacion():
+        pop = tk.Toplevel(Vc)
+        pop.title("Modificar Estudiante")
+        centrar_ventana(pop, 400, 300)
+        
+        campos = ["Nombres", "Apellidos", "Edad", "Sexo", "Nacionalidad", 
+                "CI Estudiante", "Cédula Escolar", "Pasaporte", "Estatura", 
+                "Peso", "Talla de Zapatos", "Talla Camisas", "Talla Pantalon",
+                "Enfermedad Cronica", "Observaciones", "Direccion", 
+                "Telefono Movil", "Email", "Año", "Repite"]
+        
+        ttk.Label(pop, text="Seleccione el campo a modificar:", font=("Cascadia Mono", 9)).pack(pady=10)
+        
+        combo_campo = ttk.Combobox(pop, values=campos, state="readonly")
+        combo_campo.pack(pady=5)
+        
+        frame_controles = tk.Frame(pop)
+        frame_controles.pack(pady=10)
+        
+        entrada_valor = None
+        combo_especial = None
+        
+        def actualizar_controles(event):
+            nonlocal entrada_valor, combo_especial
+            campo = combo_campo.get()
+            valor_actual = selected_student[campos.index(campo)]
+            
+            # Limpiar frame
+            for widget in frame_controles.winfo_children():
+                widget.destroy()
+            
+            # Crear controles según el tipo de campo
+            if campo in ["Sexo"]:
+                combo_especial = ttk.Combobox(frame_controles, values=["Masculino", "Femenino"], state="readonly")
+                combo_especial.set(valor_actual)
+                combo_especial.pack()
+            elif campo in ["Nacionalidad"]:
+                combo_especial = ttk.Combobox(frame_controles, values=["Venezolana", "Extranjera"], state="readonly")
+                combo_especial.set(valor_actual)
+                combo_especial.pack()
+            else:
+                entrada_valor = tk.Entry(frame_controles, width=25)
+                entrada_valor.insert(0, str(valor_actual))
+                entrada_valor.pack()
+
+        combo_campo.bind("<<ComboboxSelected>>", actualizar_controles)
+    
+        def guardar_cambios():
+            # Verificar si la ventana todavía existe
+            if not pop.winfo_exists():
+                return
+            
+            try:
+                # Obtener el campo seleccionado
+                campo = combo_campo.get()
+                if not campo:
+                    messagebox.showerror("Error", "Seleccione un campo a modificar")
+                    return
+                
+                # Obtener el valor nuevo
+                nuevo_valor = ""
+                if entrada_valor and entrada_valor.winfo_exists():
+                    nuevo_valor = entrada_valor.get()
+                elif combo_especial and combo_especial.winfo_exists():
+                    nuevo_valor = combo_especial.get()
+                else:
+                    messagebox.showerror("Error", "No se pudo obtener el valor")
+                    return
+                
+                # Validar y actualizar
+                if not validar_modificacion(campo, nuevo_valor):
+                    return
+                    
+                if actualizar_en_bd(campo, nuevo_valor):
+                    consultar_estudiantes()
+                    pop.destroy()
+                    
+            except Exception as e:
+                messagebox.showerror("Error crítico", f"Error inesperado:\n{str(e)}")
+        
+        tk.Button(pop, text="Guardar Cambios", command=guardar_cambios, 
+                font=("Cascadia Mono", 9), bg="lightgreen").pack(pady=10)
+
+    def actualizar_en_bd(campo, valor):
+        mapa_campos = {
+            "Nombres": "nombres",
+            "Apellidos": "apellidos",
+            "Edad": "edad",
+            "Sexo": "sexo",
+            "Nacionalidad": "nacionalidad",
+            "CI Estudiante": "ci_estudiante",
+            "Cédula Escolar": "cedula_escolar",
+            "Pasaporte": "Pasaporte",
+            "Estatura": "estatura",
+            "Peso": "peso",
+            "Talla de Zapatos": "talla_zapato",
+            "Talla Camisas": "talla_camisa",
+            "Talla Pantalon": "talla_pantalon",
+            "Enfermedad Cronica": "enfermedad_cronica",
+            "Observaciones": "observaciones"
+        }
+        
+        dirantbase = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        dirbasededatos = os.path.join(dirantbase, 'DB')
+        pathdb = os.path.join(dirbasededatos, 'db')
+        
+        try:
+            co = sqlite3.connect(pathdb)
+            cur = co.cursor()
+            
+            # Obtener el ID del estudiante CON VALIDACIÓN
+            cur.execute("SELECT id FROM estudiantes WHERE ci_estudiante = ? OR cedula_escolar = ? OR Pasaporte = ?",
+                    (selected_student[5], selected_student[6], selected_student[7]))  # Índices corregidos
+            resultado = cur.fetchone()
+            
+            if not resultado:
+                messagebox.showerror("Error", "No se encontró el estudiante en la base de datos")
+                return False
+                
+            estudiante_id = resultado[0]
+            # Actualizar el campo correspondiente
+            if campo in mapa_campos:
+                query = f"UPDATE estudiantes SET {mapa_campos[campo]} = ? WHERE id = ?"
+                cur.execute(query, (valor, estudiante_id))
+                
+                # Si es un campo de contacto
+                if campo in ["Direccion", "Telefono Movil", "Email"]:
+                    query_contacto = f'''
+                        UPDATE contactos SET {mapa_campos[campo]} = ? 
+                        WHERE id = (
+                            SELECT contacto_id FROM estudiantes_contactos 
+                            WHERE estudiante_id = ?
+                        )
+                    '''
+                    cur.execute(query_contacto, (valor, estudiante_id))
+                
+                # Si es un campo académico
+                if campo in ["Año", "Repite"]:
+                    query_academico = f'''
+                        UPDATE academicos SET {mapa_campos[campo]} = ? 
+                        WHERE estudiante_id = ?
+                    '''
+                    cur.execute(query_academico, (valor, estudiante_id))
+                
+                co.commit()
+                messagebox.showinfo("Éxito", "Registro actualizado correctamente")
+                return True
+                
+        except sqlite3.Error as e:
+            messagebox.showerror("Error", f"Error en base de datos: {str(e)}")
+            return False
+        finally:
+            cur.close()
+            co.close()
+
+    def eliminar_estudiante():
+        dirantbase = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        dirbasededatos = os.path.join(dirantbase, 'DB')
+        pathdb = os.path.join(dirbasededatos, 'db')
+        
+        try:
+            co = sqlite3.connect(pathdb)
+            cur = co.cursor()
+            
+            # Obtener el ID con validación
+            cur.execute("SELECT id FROM estudiantes WHERE ci_estudiante = ? OR cedula_escolar = ? OR Pasaporte = ?",
+                    (selected_student[5], selected_student[6], selected_student[7]))  # Índices corregidos
+            resultado = cur.fetchone()
+            
+            if not resultado:
+                messagebox.showerror("Error", "Estudiante no encontrado en la base de datos")
+                return
+                
+            estudiante_id = resultado[0]
+            
+            # Eliminar en cascada todas las relaciones
+            tablas_relacionadas = [
+                "estudiante_materias",
+                "estudiante_adultos",
+                "notas",
+                "ajustes",
+                "estudiantes_contactos",
+                "academicos"
+            ]
+            
+            for tabla in tablas_relacionadas:
+                cur.execute(f"DELETE FROM {tabla} WHERE estudiante_id = ?", (estudiante_id,))
+            
+            # Finalmente eliminar al estudiante
+            cur.execute("DELETE FROM estudiantes WHERE id = ?", (estudiante_id,))
+            
+            co.commit()
+            messagebox.showinfo("Éxito", "Estudiante y todas sus relaciones eliminadas correctamente")
+            consultar_estudiantes()
+            
+        except sqlite3.Error as e:
+            messagebox.showerror("Error", f"Error al eliminar: {str(e)}")
+        finally:
+            cur.close()
+            co.close()
+
+    def confirmar_eliminacion():
+        respuesta = messagebox.askyesno("Confirmar", "¿Está seguro de eliminar este estudiante?")
+        if respuesta:
+            eliminar_estudiante()
+
+    #Definicion de opciones de administrador
+    def administrar():
+        global ventana2, modo_administracion
+        
+        def actualizar_modo():
+            global modo_administracion
+            modo_administracion = modo.get()
+            messagebox.showinfo("Modo actual", f"Modo seleccionado: {modo_administracion.capitalize()}")
+        
+        if not ventana2:
+            ventana2 = True
+            pop = tk.Toplevel(Vc)
+            pop.title("Opciones de Administrador")
+            centrar_ventana(pop, 300, 200)
+            pop.resizable(False, False)
+            pop.iconbitmap(icopath)
+            pop.wm_attributes("-topmost", 1)
+            
+            frame = tk.Frame(pop, padx=20, pady=20)
+            frame.pack(expand=True, fill='both')
+            
+            tk.Label(frame, text="Seleccione el modo:", font=("Cascadia Mono", 10)).pack(pady=5)
+            
+            modo = tk.StringVar(value="nada")
+            
+            opciones = [
+                ("Ninguna acción", "nada"),
+                ("Modificar datos", "modificar"),
+                ("Eliminar estudiantes", "eliminar")
+            ]
+            
+            for texto, valor in opciones:
+                tk.Radiobutton(frame, text=texto, variable=modo, value=valor, 
+                            command=actualizar_modo, font=("Cascadia Mono", 9)).pack(anchor='w')
+            
+            def cerrar():
+                global ventana2
+                ventana2 = False
+                pop.destroy()
+            
+            pop.protocol("WM_DELETE_WINDOW", cerrar)
+
     if nivel == 1:
-        bt2e = tk.Button(Vc, text="Opciones de Administrador", font=("Cascadia Mono",8),bg="light green"); bt2e.pack()
+        bt2e = tk.Button(Vc, text="Opciones de Administrador", font=("Cascadia Mono",8),bg="light green",command=administrar); bt2e.pack()
         bt2e.place(x=400,y=500)
 
     bt3 = tk.Button(Vc,text="Regresar",font=("Cascadia Mono",12), command=comeback); bt3.pack(); 
