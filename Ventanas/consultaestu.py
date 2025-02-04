@@ -1155,6 +1155,5 @@ def Con1(master, nivel):
     
     # Configurar posición inicial
     actualizar_botones()
-    
 
     Vc.mainloop()

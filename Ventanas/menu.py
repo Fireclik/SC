@@ -44,6 +44,10 @@ def M1(master, nivel):
                 Vm.destroy()
                 from Ventanas.registroM import Re2
                 Re2(master, nivel)
+            def btregistarnotas():
+                Vm.destroy()
+                from Ventanas.registroN import Rn1
+                Rn1(master, nivel)
             def comeback():
                 re_bt1.destroy()
                 re_bt2.destroy()
@@ -57,8 +61,11 @@ def M1(master, nivel):
             re_bt2 = tk.Button(Vm,text="Registrar Materias",font=("Cascadia Mono",12),command=btregistarmater,width=20,height=1); re_bt2.pack()
             re_bt2.place(x=310,y=300)
 
-            re_bt3 = tk.Button(Vm,text="Atras",font=("Cascadia Mono",12),command=comeback,width=20,height=1); re_bt3.pack()
+            re_bt3 = tk.Button(Vm,text="Registrar Notas",font=("Cascadia Mono",12),command=btregistarnotas,width=20,height=1); re_bt3.pack()
             re_bt3.place(x=310,y=400)
+
+            re_bt3 = tk.Button(Vm,text="Atras",font=("Cascadia Mono",12),command=comeback,width=20,height=1); re_bt3.pack()
+            re_bt3.place(x=310,y=500)
 
             rebt.destroy()
             logut.destroy()
